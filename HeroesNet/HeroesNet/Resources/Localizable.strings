@@ -1,0 +1,18 @@
+/* 
+  Localizable.strings
+  HeroesNet
+
+  Created by Genar Codina on 10/11/21.
+  
+*/
+
+//MARK: - list view
+"no_description_available" = "No description available";
+"no_internet_connection" = "No internet connection";
+
+
+//MARK: - Detail view
+"number_of_series" = "# series: %@";
+"number_of_comics" = "# comics: %@";
+"number_of_events" = "# events: %@";
+"number_of_stories" = "# stories: %@";

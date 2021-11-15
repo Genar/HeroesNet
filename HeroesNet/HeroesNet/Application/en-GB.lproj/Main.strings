@@ -1,0 +1,33 @@
+
+/* Class = "UILabel"; text = "# comics:"; ObjectID = "4KZ-Im-FdU"; */
+"4KZ-Im-FdU.text" = "# comics:";
+
+/* Class = "UILabel"; text = "Hero"; ObjectID = "568-na-ijI"; */
+"568-na-ijI.text" = "Hero";
+
+/* Class = "UILabel"; text = "Comics"; ObjectID = "BIV-eo-uFJ"; */
+"BIV-eo-uFJ.text" = "Comics";
+
+/* Class = "UILabel"; text = "Connection status"; ObjectID = "aP3-Wd-auZ"; */
+"aP3-Wd-auZ.text" = "Connection status";
+
+/* Class = "UILabel"; text = "Series"; ObjectID = "f0W-WT-ELg"; */
+"f0W-WT-ELg.text" = "Series";
+
+/* Class = "UILabel"; text = "# stories:"; ObjectID = "jUH-lU-1tt"; */
+"jUH-lU-1tt.text" = "# stories:";
+
+/* Class = "UILabel"; text = "# events:"; ObjectID = "oOb-ga-Dse"; */
+"oOb-ga-Dse.text" = "# events:";
+
+/* Class = "UILabel"; text = "# series:"; ObjectID = "qFw-sc-HUM"; */
+"qFw-sc-HUM.text" = "# series:";
+
+/* Class = "UILabel"; text = "Description"; ObjectID = "tkN-0R-E9V"; */
+"tkN-0R-E9V.text" = "Description";
+
+/* Class = "UILabel"; text = "Description"; ObjectID = "uUt-Pz-U9U"; */
+"uUt-Pz-U9U.text" = "Description";
+
+/* Class = "UILabel"; text = "Name"; ObjectID = "wmf-kA-L0D"; */
+"wmf-kA-L0D.text" = "Name";
