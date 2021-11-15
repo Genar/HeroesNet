@@ -6,33 +6,36 @@
 //
 
 import XCTest
+import EamDomain
 @testable import HeroesNet
 
 class HeroesListViewModelTests: XCTestCase {
   
-  var repository: RepositoryProtocol?
+  var isConnectionOnUseCase: IsConnectionOnUseCaseProtocol!
   
-  var sut: HeroesListViewModel?
+  var sut: HeroesListViewModel!
 
   override func setUp() {
     
     super.setUp()
     
-    repository = RepositoryMock()
+    let heroesUseCase = HeroesUseCaseMock()
+    let isConnectionOnUseCase = IsConnectionOnUseCaseMock()
+    let startNetworkMonitoringUseCase =  StartNetworkMonitoringUseCaseMock()
     
-    sut = HeroesListViewModel(repository: repository!)
+    sut = HeroesListViewModel(heroesUseCase: heroesUseCase,
+                              isConnectionOnUseCase: isConnectionOnUseCase,
+                              startNetworkMonitoringUseCase: startNetworkMonitoringUseCase)
   }
 
   override func tearDown() {
-    
-    repository = nil
     
     super.tearDown()
   }
   
   func testviewDidLoadLoadsTwoItems() {
 
-    // RepositoryMock returns two items
+    // HeroesUseCaseMock returns two items
     sut?.viewDidLoad()
     let numberOfHeroes = sut?.heroes.count ?? 0
     XCTAssertEqual(numberOfHeroes, 2)
@@ -40,7 +43,7 @@ class HeroesListViewModelTests: XCTestCase {
   
   func testNumberOfRowsInSectionIsTwo() {
     
-    // RepositoryMock returns two items
+    // HeroesUseCaseMockck returns two items
     sut?.viewDidLoad()
     let numberRowsInSection = sut?.numberOfRowsInSection(section: 0) ?? 0
     XCTAssertEqual(numberRowsInSection, 2)
@@ -54,7 +57,7 @@ class HeroesListViewModelTests: XCTestCase {
   
   func testLoadMoreItemsSetsTwoItems() {
     
-    // RepositoryMock returns two items
+    // HeroesUseCaseMock returns two items
     sut?.loadMoreItems()
     let numberOfHeroes = sut?.heroes.count ?? 0
     XCTAssertEqual(numberOfHeroes, 2)
@@ -62,7 +65,7 @@ class HeroesListViewModelTests: XCTestCase {
   
   func testWillEnterForegroundSetsTwoItems() {
     
-    // RepositoryMock returns two items
+    // HeroesUseCaseMock returns two items
     sut?.willEnterForeground()
     let numberRowsInSection = sut?.numberOfRowsInSection(section: 0) ?? 0
     XCTAssertEqual(numberRowsInSection, 2)

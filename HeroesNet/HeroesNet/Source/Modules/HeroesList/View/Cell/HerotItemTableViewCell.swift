@@ -7,6 +7,7 @@
 
 import UIKit
 import EamCoreUtils
+import EamDomain
 
 final class HerotItemTableViewCell: UITableViewCell {
   
@@ -20,7 +21,7 @@ final class HerotItemTableViewCell: UITableViewCell {
 
   @IBOutlet weak var heroNumComicsLabel: UILabel!
   
-  public func fill(with item: HeroItemCellModel) {
+  public func fill(with item: HeroDomain) {
     
     self.heroNameLabel.text = item.name
     self.heroDescriptionLabel.text = item.description

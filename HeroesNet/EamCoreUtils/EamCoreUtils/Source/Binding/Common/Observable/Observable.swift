@@ -31,6 +31,5 @@ public class Observable<ObservedType> {
     func bindingChanged(to newValue: ObservedType) {
         
         _value = newValue
-        print("Value is now \(newValue)")
     }
 }

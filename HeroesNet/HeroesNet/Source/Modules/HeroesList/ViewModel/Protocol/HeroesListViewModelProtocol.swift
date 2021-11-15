@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import CoreData
+import EamCoreUtils
+import EamDomain
 
 protocol HeroesListViewModelProtocol {
     
@@ -14,16 +15,14 @@ protocol HeroesListViewModelProtocol {
   
   var enableUserInteraction: ((Bool) -> ())? { get set }
 
-  var heroes: [HeroEntity] { get set }
-
   /// To perform an action when the user selects an item of the table
   var coordinatorDelegate: HeroesListViewModelCoordinatorDelegate? { get set }
 
-  var warningsInfo: WarningsInfo { get set }
+  // var warningsInfo: WarningsInfo { get set }
 
   func numberOfRowsInSection(section: Int) -> Int
 
-  func showDetail(heroInfo: HeroEntity)
+  func showDetail(indexPath: IndexPath)
 
   func isConnectionOn() -> Bool
 
@@ -32,4 +31,10 @@ protocol HeroesListViewModelProtocol {
   func willEnterForeground()
   
   func loadMoreItems()
+  
+  func getCellInfo(indexPath: IndexPath) -> HeroDomain
+  
+  func renderImage(index: Int, completion: @escaping ((Data) -> Void))
+  
+  func getWarningInfo() -> Observable<String>
 }

@@ -23,7 +23,7 @@ final class HeroesListViewController: UIViewController, Storyboarded {
   
   private let distanceFromBottom = 10.0
   
-  var viewModel: HeroesListViewModelProtocol?
+  var viewModel: HeroesListViewModelProtocol!
   
   override func viewDidLoad() {
       
@@ -31,7 +31,7 @@ final class HeroesListViewController: UIViewController, Storyboarded {
     
     setupBindings()
     setupTableViewDelegates()
-    viewModel?.viewDidLoad()
+    viewModel.viewDidLoad()
     NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground),
                                            name: UIApplication.willEnterForegroundNotification,
                                            object: nil)
@@ -39,7 +39,7 @@ final class HeroesListViewController: UIViewController, Storyboarded {
   
   @objc private func willEnterForeground() {
     
-    viewModel?.willEnterForeground()
+    viewModel.willEnterForeground()
   }
   
   private func setupTableViewDelegates() {
@@ -50,19 +50,19 @@ final class HeroesListViewController: UIViewController, Storyboarded {
   
   private func setupBindings() {
       
-    self.viewModel?.showHeroes = { [weak self] arrayOfIndexes in
+    self.viewModel.showHeroes = { [weak self] arrayOfIndexes in
       guard let self = self else { return }
       self.heroesTableView.insertRows(at: arrayOfIndexes, with: .fade)
     }
     
-    self.viewModel?.enableUserInteraction = { [weak self] canUserInteract in
+    self.viewModel.enableUserInteraction = { [weak self] canUserInteract in
       guard let self = self else { return }
       self.heroesTableView.isUserInteractionEnabled = canUserInteract
       self.heroesTableView.isScrollEnabled = canUserInteract
       _ = canUserInteract ? self.activityIndicator.stopAnimating() : self.activityIndicator.startAnimating()
     }
     
-    guard let warningInfo = self.viewModel?.warningsInfo.info else { return }
+    let warningInfo = self.viewModel.getWarningInfo()
     self.warningLabel.bind(to: warningInfo)
   }
   
@@ -72,7 +72,7 @@ extension HeroesListViewController: UITableViewDataSource {
     
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
       
-    return viewModel?.numberOfRowsInSection(section: section) ?? 0
+    return viewModel.numberOfRowsInSection(section: section)
   }
 
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -98,64 +98,35 @@ extension HeroesListViewController: UITableViewDataSource {
   
   private func loadMoreItems() {
     
-    guard let viewModel = self.viewModel else { return }
     viewModel.loadMoreItems()
   }
   
   private func renderCell(cell: HerotItemTableViewCell, indexPath: IndexPath) {
     
-    if let heroes = viewModel?.heroes {
-      let hero = heroes[indexPath.row]
-      guard let heroName = hero.name,
-            let heroDescription = (hero.resultDescription?.isEmpty ?? true) ?
-              HeroItemStrings.noDescriptionAvailable.localized : hero.resultDescription else { return }
-      let heroNumSeries = String(format: HeroItemStrings.numberOfSeries.localized,
-                                 String(hero.series?.available ?? 0))
-      let heroNumComics = String(format: HeroItemStrings.numberOfComics.localized,
-                                 String(hero.comics?.available ?? 0))
-      let heroItem = HeroItemCellModel(name: heroName,
-                                       description: heroDescription,
-                                       numSeries: heroNumSeries,
-                                       numComics: heroNumComics)
-      cell.fill(with: heroItem)
-      
-      if let connectionOn = viewModel?.isConnectionOn(), connectionOn {
-        renderFromNetwork(indexPath: indexPath, cell: cell)
-      }
+    let heroItem = viewModel.getCellInfo(indexPath: indexPath)
+    cell.fill(with: heroItem)
+
+    if viewModel.isConnectionOn() {
+      renderFromNetwork(indexPath: indexPath, cell: cell)
     }
   }
   
   private func renderFromNetwork(indexPath: IndexPath, cell: HerotItemTableViewCell) {
     
-    if let heroes = viewModel?.heroes {
-      cell.heroImageView.image = UIImage(named: HeroItemStrings.heroEmptyImageKey)
-      var heroItem = heroes[indexPath.row]
-      if let imageUrl = heroItem.thumbnail,
-         let imagePath = imageUrl.path,
-         let imageExtension = imageUrl.thumbnailExtension?.rawValue,
-         let urlPath = URL(string: imagePath + "." + imageExtension) {
-        NetworkUtils.downloadImage(from: urlPath) { (data, response, error) in
-          guard let data = data, let _ = response, error == nil else { return }
-          guard let image = UIImage(data: data) else { return }
-          if let imagePng = image.pngData() {
-            heroItem.image = imagePng
-            self.viewModel?.heroes[indexPath.row].image = imagePng
-            cell.heroImageView.image = UIImage(data: imagePng)
-          }
-        }
-      }
+    cell.heroImageView.image = UIImage(named: HeroItemStrings.heroEmptyImageKey)
+    viewModel.renderImage(index: indexPath.row) { data in
+      guard let image = UIImage(data: data) else { return }
+      if let imagePng = image.pngData() {
+        cell.heroImageView.image = UIImage(data: imagePng)
+    }
     }
   }
-  
 }
 
 extension HeroesListViewController: UITableViewDelegate {
   
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
       
-    if let viewModel = self.viewModel, !viewModel.heroes.isEmpty {
-       let hero = viewModel.heroes[indexPath.row]
-        viewModel.showDetail(heroInfo: hero)
-    }
+      viewModel.showDetail(indexPath: indexPath)
   }
 }

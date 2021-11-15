@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import EamCoreUtils
+import EamDomain
 
 protocol HeroDetailViewModelProtocol {
-    
-  var heroInfo: HeroEntity? { get set }
   
-  var showHero: ((HeroEntity) -> ())? { get set }
+  var showHero: (() -> ())? { get set }
+  
+  var heroInfo: HeroDomain? { get set }
   
   var enableAnimation: ((Bool) -> ())? { get set }
     
@@ -22,4 +24,8 @@ protocol HeroDetailViewModelProtocol {
   func isConnectionOn() -> Bool
   
   func stopAnimation()
+  
+  func getHeroUrlInfo() -> URL?
+  
+  func getHeroInfo() -> HeroDomain
 }

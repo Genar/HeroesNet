@@ -8,14 +8,15 @@
 import Foundation
 import Network
 import EamCoreUtils
+import EamDomain
 
-private enum HeroListViewModelConstants {
+enum HeroViewModelConstants {
   
   static let noInternetConnection: String = "no_internet_connection"
 }
 
 class HeroesListViewModel: HeroesListViewModelProtocol {
-  
+
   /// Limit of items to get from the webservice
   let limit = 20
   
@@ -23,28 +24,33 @@ class HeroesListViewModel: HeroesListViewModelProtocol {
   var offset = 0
   
   weak var coordinatorDelegate: HeroesListViewModelCoordinatorDelegate?
-
-  private let repository: RepositoryProtocol
+  
+  private let heroesUseCase: HeroesUseCaseProtocol
+  
+  private let isConnectionOnUseCase: IsConnectionOnUseCaseProtocol
+  
+  private let startNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseProtocol
   
   var showHeroes: (([IndexPath]) -> ())?
   
   var enableUserInteraction: ((Bool) -> ())?
   
-  var heroes: [HeroEntity] = []
+  var heroes: [HeroDomain] = []
   
   var warningsInfo = WarningsInfo(info: Observable(""))
   
-  init(repository: RepositoryProtocol) {
+  init(heroesUseCase: HeroesUseCaseProtocol,
+       isConnectionOnUseCase: IsConnectionOnUseCaseProtocol,
+       startNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseProtocol) {
       
-      self.repository = repository
+    self.heroesUseCase = heroesUseCase
+    self.isConnectionOnUseCase = isConnectionOnUseCase
+    self.startNetworkMonitoringUseCase = startNetworkMonitoringUseCase
   }
   
   func viewDidLoad() {
     
     getHeroes()
-    
-    setNetworkMonitoring()
-    
     enableUserInteraction?(false)
   }
   
@@ -60,14 +66,15 @@ class HeroesListViewModel: HeroesListViewModelProtocol {
     return heroes.count
   }
   
-  func showDetail(heroInfo: HeroEntity) {
+  func showDetail(indexPath: IndexPath) {
     
-    coordinatorDelegate?.showDetail(heroInfo: heroInfo)
+    let hero = heroes[indexPath.row]
+    coordinatorDelegate?.showDetail(heroInfo: hero)
   }
   
   func isConnectionOn() -> Bool {
     
-    return repository.isNetworkOn()
+    return self.isConnectionOnUseCase.execute()
   }
   
   func loadMoreItems() {
@@ -79,8 +86,46 @@ class HeroesListViewModel: HeroesListViewModelProtocol {
       self.enableUserInteraction?(false)
       self.getHeroesFromWebService(limit: limit, offset: offset)
     } else {
-      self.showWarningsInfo(info: HeroListViewModelConstants.noInternetConnection.localized)
+      self.showWarningsInfo(info: HeroViewModelConstants.noInternetConnection.localized)
     }
+  }
+  
+  func getCellInfo(indexPath: IndexPath) -> HeroDomain {
+    
+    let hero = heroes[indexPath.row]
+    let heroDescription = hero.description.isEmpty ? HeroItemStrings.noDescriptionAvailable.localized : hero.description
+    let heroItem = HeroDomain(id: hero.id,
+                              name: hero.name,
+                              description: heroDescription,
+                              numSeries: String(format: HeroItemStrings.numberOfSeries.localized,
+                                                hero.numSeries),
+                              numComics: String(format: HeroItemStrings.numberOfSeries.localized,
+                                                hero.numComics),
+                              numEvents: String(format: HeroItemStrings.numberOfEvents.localized,
+                                                hero.numEvents),
+                              numStories: String(format: HeroItemStrings.numberOfSeries.localized,
+                                                 hero.numStories),
+                              thumbnailUrl: hero.thumbnailUrl,
+                              image: hero.image,
+                              url: hero.url)
+    
+    return heroItem
+  }
+  
+  func renderImage(index: Int, completion: @escaping ((Data) -> Void)) {
+    
+    let heroItem = heroes[index]
+    guard let imageUrl = heroItem.thumbnailUrl else { return }
+    NetworkUtils.downloadImage(from: imageUrl) { (data, response, error) in
+      guard let data = data, let _ = response, error == nil else { return }
+      self.heroes[index].image = data
+      completion(data)
+    }
+  }
+  
+  func getWarningInfo() -> Observable<String> {
+    
+    self.warningsInfo.info
   }
   
   private func getHeroes() {
@@ -90,7 +135,7 @@ class HeroesListViewModel: HeroesListViewModelProtocol {
       self.showWarningsInfo(info: "")
       getHeroesFromWebService(limit: limit, offset: offset)
     } else {
-      self.showWarningsInfo(info: HeroListViewModelConstants.noInternetConnection.localized)
+      self.showWarningsInfo(info: HeroViewModelConstants.noInternetConnection.localized)
     }
   }
   
@@ -104,22 +149,18 @@ class HeroesListViewModel: HeroesListViewModelProtocol {
       
       let pathUpdateHandler: ((NWPath) -> Void )? = { [weak self] path in
           guard let self = self else { return }
-          if path.status == .satisfied {
-              print("----We are connected!")
-          } else {
-              print("----No internet connection.")
-              self.showWarningsInfo(info: HeroListViewModelConstants.noInternetConnection.localized)
+          if path.status != .satisfied {
+            self.showWarningsInfo(info: HeroViewModelConstants.noInternetConnection.localized)
           }
-          print(path.isExpensive)
       }
-      repository.startNetworkMonitoring(pathUpdateHandler: pathUpdateHandler)
+    startNetworkMonitoringUseCase.execute(pathUpdateHandler: pathUpdateHandler)
   }
   
   private func getHeroesFromWebService(limit: Int, offset: Int) {
 
-    self.repository.getHeroes(limit: limit, offset: offset) { [weak self] result in
+    self.heroesUseCase.execute(limit: limit, offset: offset) { [weak self] result in
       guard let self = self else { return }
-      
+
       switch result {
       case .success(let heroes):
         let areNumberOfItemsEqualToLimit = heroes.count == limit

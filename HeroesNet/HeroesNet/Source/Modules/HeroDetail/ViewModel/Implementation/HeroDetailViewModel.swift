@@ -6,45 +6,68 @@
 //
 
 import Foundation
+import Network
+import EamCoreUtils
+import EamDomain
 
 class HeroDetailViewModel: HeroDetailViewModelProtocol {
-
+  
   weak var coordinatorDelegate: HeroDetailViewModelCoordinatorDelegate?
   
-  let repository: RepositoryProtocol
+  let isConnectionOnUseCase: IsConnectionOnUseCaseProtocol
   
-  var heroInfo: HeroEntity?
+  var heroInfo: HeroDomain?
   
-  var showHero: ((HeroEntity) -> ())?
+  var showHero: (() -> ())?
   
   var enableAnimation: ((Bool) -> ())?
   
-  init(repository: RepositoryProtocol) {
+  init(isConnectionOnUseCase: IsConnectionOnUseCaseProtocol) {
       
-      self.repository = repository
+    self.isConnectionOnUseCase = isConnectionOnUseCase
   }
   
   // MARK: - Public methods
   
   func viewWillAppear() {
   
-    let isConnectionOk = isConnectionOn()
-    if !isConnectionOk {
-      print("Connection KO")
+    showHero?()
+    if isConnectionOn() {
+      enableAnimation?(true)
     }
-    
-    guard let heroInfo = self.heroInfo else { return }
-    showHero?(heroInfo)
-    enableAnimation?(true)
   }
-    
+  
   func isConnectionOn() -> Bool {
       
-    return repository.isNetworkOn()
+    return isConnectionOnUseCase.execute()
   }
   
   func stopAnimation() {
     
     enableAnimation?(false)
   }
+  
+  func getHeroUrlInfo() -> URL? {
+    
+    return heroInfo?.url
+  }
+  
+  func getHeroInfo() -> HeroDomain {
+    
+    return HeroDomain(id: heroInfo?.id ?? 0,
+                      name: heroInfo?.name ?? "",
+                      description: heroInfo?.description ?? "",
+                      numSeries: String(format: HeroItemStrings.numberOfSeries.localized,
+                                        heroInfo?.numSeries ?? "0"),
+                      numComics: String(format: HeroItemStrings.numberOfComics.localized,
+                                        heroInfo?.numComics ?? "0"),
+                      numEvents: String(format: HeroItemStrings.numberOfEvents.localized,
+                                        heroInfo?.numEvents ?? "0"),
+                      numStories: String(format: HeroItemStrings.numberOfStories.localized,
+                                         heroInfo?.numStories ?? "0"),
+                      thumbnailUrl: heroInfo?.thumbnailUrl,
+                      image: heroInfo?.image,
+                      url: heroInfo?.url)
+  }
+  
 }

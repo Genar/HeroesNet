@@ -7,73 +7,51 @@
 
 import XCTest
 @testable import HeroesNet
+import EamDomain
 
 class HeroDetailViewModelTests: XCTestCase {
   
-  var repository: RepositoryProtocol?
-  
   var sut: HeroDetailViewModel?
+  
+  var isConnectionOnUseCase: IsConnectionOnUseCaseProtocol?
 
   override func setUp() {
     
     super.setUp()
     
-    repository = RepositoryMock()
-    
-    sut = HeroDetailViewModel(repository: repository!)
+    isConnectionOnUseCase = IsConnectionOnUseCaseMock()
+    sut = HeroDetailViewModel(isConnectionOnUseCase: isConnectionOnUseCase!)
   }
 
   override func tearDown() {
     
-    repository = nil
-    
     super.tearDown()
-  }
-  
-  func testViewWillAppear() {
-    
-    let hero = HeroEntity(id: 12345,
-                          name: "Daredevil",
-                          resultDescription: "Daredevil description",
-                          modified: nil,
-                          thumbnail: nil,
-                          resourceURI: nil,
-                          comics: nil,
-                          series: nil,
-                          stories: nil,
-                          events: nil,
-                          urls: nil,
-                          image: nil)
-    self.sut?.heroInfo = hero
-    
-    sut?.showHero = { hero in
-      XCTAssertEqual(hero.id, 12345)
-    }
-    sut?.viewWillAppear()
   }
     
   func testIsConnectionOn() {
-      
-    let isConnectionOn = repository!.isNetworkOn()
-    XCTAssertTrue(isConnectionOn)
+    
+    if let isConnectionOnUseCase = self.isConnectionOnUseCase {
+      let isConnectionOn = isConnectionOnUseCase.execute()
+      XCTAssertTrue(isConnectionOn)
+    } else {
+      XCTFail("isConnectionOnUseCase is nil")
+    }
   }
   
   func testStopAnimationIsTrue() {
     
     let view = HeroDetailViewControllerMock()
     view.viewModel = sut
-    let hero = HeroEntity(id: 12345,
-                          name: "Daredeveil",
-                          resultDescription: nil,
-                          modified: nil,
-                          thumbnail: nil,
-                          resourceURI: nil,
-                          comics: nil,
-                          series: nil,
-                          stories: nil,
-                          events: nil,
-                          urls: nil,
-                          image: nil)
+    let hero = HeroDomain(id: 12345,
+                         name: "Ant-Man",
+                         description: "Ant-Man description",
+                         numSeries: "3",
+                         numComics: "4",
+                         numEvents: "5",
+                         numStories: "6",
+                         thumbnailUrl: nil,
+                         image: nil,
+                         url: nil)
     sut?.heroInfo = hero
     view.viewDidLoad()
     view.viewWillAppear(true)

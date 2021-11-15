@@ -31,30 +31,35 @@ final class HeroDetailViewController: UIViewController, Storyboarded {
   
   @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
   
-  var viewModel: HeroDetailViewModelProtocol?
-
+  var viewModel: HeroDetailViewModelProtocol!
+  
   override func viewDidLoad() {
     
     super.viewDidLoad()
-    
-    setupBindings()
+    setupUI()
   }
   
   override func viewWillAppear(_ animated: Bool) {
 
     super.viewWillAppear(animated)
-    viewModel?.viewWillAppear()
+    viewModel.viewWillAppear()
   }
   
-  private func setupBindings() {
+  deinit {
+    if webView != nil {
+      webView.stopLoading()
+    }
+  }
+  
+  private func setupUI() {
       
-    self.viewModel?.showHero = { [weak self] hero in
+    self.viewModel.showHero = { [weak self] in
       guard let self = self else { return }
-      self.fillHeroInfo(hero: hero)
-      self.setupWebView(hero: hero)
+      self.fillHeroInfo()
+      self.setupWebView()
     }
     
-    self.viewModel?.enableAnimation = { [weak self] enable in
+    self.viewModel.enableAnimation = { [weak self] enable in
       guard let self = self else { return }
       _ = enable ? self.activityIndicator.startAnimating() : self.activityIndicator.stopAnimating()
     }
@@ -62,35 +67,22 @@ final class HeroDetailViewController: UIViewController, Storyboarded {
     webView.navigationDelegate = self
   }
   
-  private func fillHeroInfo(hero: HeroEntity) {
+  private func fillHeroInfo() {
     
+    let hero = viewModel.getHeroInfo()
     self.heroNameLabel.text = hero.name
-    
-    let description = hero.resultDescription ?? ""
-    self.descriptionLabel.text = description
-
-    let numberOfSeries = hero.series?.available ?? 0
-    self.numberOfSeriesLabel.text = String(format: HeroItemStrings.numberOfSeries.localized,
-                                           String(numberOfSeries))
-
-    let numberOfComics = hero.comics?.available ?? 0
-    self.numberOfComicsLabel.text = String(format: HeroItemStrings.numberOfComics.localized,
-                                           String(numberOfComics))
-
-    let numberOfEvents = hero.events?.available ?? 0
-    self.numberOfEventsLabel.text = String(format: HeroItemStrings.numberOfEvents.localized,
-                                           String(numberOfEvents))
-
-    let numberOfStories = hero.stories?.collectionURI?.indices.count ?? 0
-    self.numberOfStoriesLabel.text = String(format: HeroItemStrings.numberOfStories.localized,
-                                            String(numberOfStories))
+    self.descriptionLabel.text = hero.description
+    self.numberOfSeriesLabel.text = hero.numSeries
+    self.numberOfComicsLabel.text = hero.numComics
+    self.numberOfEventsLabel.text = hero.numEvents
+    self.numberOfStoriesLabel.text = hero.numStories
 
     guard let imageData = hero.image,
           let image = UIImage(data: imageData) else { return }
       self.heroImageView.image = image
   }
   
-  private func setupWebView(hero: HeroEntity) {
+  private func setupWebView() {
 
     let config = WKWebViewConfiguration()
 
@@ -99,12 +91,11 @@ final class HeroDetailViewController: UIViewController, Storyboarded {
         pref.preferredContentMode = .mobile
         config.defaultWebpagePreferences = pref
     }
+    
+    config.limitsNavigationsToAppBoundDomains = true
 
-    guard let heroUris = hero.urls, !heroUris.isEmpty else { return }
-
-    if let urlStr = heroUris[0].url, let url = URL(string: urlStr) {
-      self.webView.load(URLRequest(url: url))
-    }
+    guard let heroUri = self.viewModel.getHeroUrlInfo() else { return }
+    self.webView.load(URLRequest(url: heroUri))
   }
   
 }
@@ -113,7 +104,7 @@ extension HeroDetailViewController: WKNavigationDelegate {
   
   func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
     
-    self.viewModel?.stopAnimation()
+    self.viewModel.stopAnimation()
   }
   
 }

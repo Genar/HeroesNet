@@ -9,5 +9,6 @@
 import Foundation
 
 protocol HeroesListCoordinatorProtocol: AnyObject {
-    
+  
+  func start()
 }

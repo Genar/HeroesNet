@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 import EamCoreUtils
+import EamDomain
 
 class HeroDetailCoordinator: BaseCoordinatorProtocol, HeroDetailCoordinatorProtocol, HeroDetailViewModelCoordinatorDelegate {
  
@@ -19,16 +20,16 @@ class HeroDetailCoordinator: BaseCoordinatorProtocol, HeroDetailCoordinatorProto
 
   /// Navigation controller to push view controllers
   var navigationController: UINavigationController
-
-  /// Repository for the view model
-  var repository: RepositoryProtocol
+  
+  /// IsConnectionOnUseCase for the view model
+  var isConneciontOnUseCase: IsConnectionOnUseCaseProtocol
 
   /// Info to pass between coordinators
-  var heroInfo: HeroEntity?
+  var heroInfo: HeroDomain?
 
   lazy var viewModel: HeroDetailViewModelProtocol! = {
-      let viewModel = HeroDetailViewModel(repository: self.repository)      
-      return viewModel
+    let viewModel = HeroDetailViewModel(isConnectionOnUseCase: self.isConneciontOnUseCase)
+    return viewModel
   }()
   
   private let storyboardName = "Main"
@@ -36,10 +37,10 @@ class HeroDetailCoordinator: BaseCoordinatorProtocol, HeroDetailCoordinatorProto
   /// Inits the coordinator
   /// - Parameter navigationController: navigation controller
   init(navigationController: UINavigationController,
-       repository: RepositoryProtocol) {
-      
-      self.navigationController = navigationController
-      self.repository = repository
+       isConneciontOnUseCase: IsConnectionOnUseCaseProtocol) {
+    
+    self.navigationController = navigationController
+    self.isConneciontOnUseCase = isConneciontOnUseCase
   }
   
   /// Pushes the view controller

@@ -9,6 +9,7 @@
 import XCTest
 import UIKit
 @testable import HeroesNet
+import EamDomain
 import EamCoreUtils
 
 class HeroesListCoordinatorTests: XCTestCase {
@@ -19,10 +20,15 @@ class HeroesListCoordinatorTests: XCTestCase {
     
     super.setUp()
     
-    let repositoryMock = RepositoryMock()
     let navigationController = UINavigationController()
+    let heroesUseCase = HeroesUseCaseMock()
+    let isConnectionOnUseCase = IsConnectionOnUseCaseMock()
+    let startNetworkMonitoringUseCase = StartNetworkMonitoringUseCaseMock()
+    
     sut = HeroesListCoordinator(navigationController: navigationController,
-                                repository: repositoryMock)
+                                heroesUseCase: heroesUseCase,
+                                isConnectionOnUseCase: isConnectionOnUseCase,
+                                startNetworkMonitoringUseCase: startNetworkMonitoringUseCase)
   }
 
   override func tearDown() {
@@ -41,18 +47,16 @@ class HeroesListCoordinatorTests: XCTestCase {
   
   func testShowDetailSetsChildCoordinator() {
     
-    let hero = HeroEntity(id: 12345,
-                          name: "Peter Parker",
-                          resultDescription: nil,
-                          modified: nil,
-                          thumbnail: nil,
-                          resourceURI: nil,
-                          comics: nil,
-                          series: nil,
-                          stories: nil,
-                          events: nil,
-                          urls: nil,
-                          image: nil)
+    let hero = HeroDomain(id: 12345,
+                         name: "Ant-Man",
+                         description: "Ant-Man description",
+                         numSeries: "3",
+                         numComics: "4",
+                         numEvents: "5",
+                         numStories: "6",
+                         thumbnailUrl: nil,
+                         image: nil,
+                         url: nil)
     sut?.showDetail(heroInfo: hero)
     let childCoordinators = sut?.childCoordinators
     XCTAssertNotNil(childCoordinators)

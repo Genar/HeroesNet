@@ -7,8 +7,9 @@
 
 import Foundation
 import UIKit
+import EamDomain
 
 protocol HeroesListViewModelCoordinatorDelegate: AnyObject {
     
-    func showDetail(heroInfo: HeroEntity)
+    func showDetail(heroInfo: HeroDomain)
 }

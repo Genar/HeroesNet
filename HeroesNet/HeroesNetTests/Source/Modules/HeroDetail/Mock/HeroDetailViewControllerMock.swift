@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import EamDomain
 @testable import HeroesNet
 
 class HeroDetailViewControllerMock: UIViewController {
@@ -16,7 +17,7 @@ class HeroDetailViewControllerMock: UIViewController {
   
   var isAnimationEnabled: Bool?
   
-  var hero: HeroEntity?
+  var hero: HeroDomain?
 
   override func viewDidLoad() {
     
@@ -33,9 +34,7 @@ class HeroDetailViewControllerMock: UIViewController {
   
   private func setupBindings() {
       
-    self.viewModel?.showHero = { [weak self] hero in
-      guard let self = self else { return }
-      self.hero = hero
+    self.viewModel?.showHero = {
     }
     
     self.viewModel?.enableAnimation = { [weak self] enable in

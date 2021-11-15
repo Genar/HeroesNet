@@ -6,8 +6,9 @@
 //
 
 import Foundation
+import EamDomain
 
 protocol HeroDetailCoordinatorProtocol: AnyObject {
     
-    var heroInfo: HeroEntity? { get set }
+    var heroInfo: HeroDomain? { get set }
 }

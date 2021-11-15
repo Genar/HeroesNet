@@ -11,13 +11,13 @@ public enum SerializationError: Error {
   
   case missingData
 
-  case dataCorrupted
+  case dataCorrupted(DecodingError.Context)
 
-  case keyNotFound
+  case keyNotFound(CodingKey, DecodingError.Context)
 
-  case valueNotFound
+  case valueNotFound(Any, DecodingError.Context)
 
-  case typeMismatch
+  case typeMismatch(Any, DecodingError.Context)
 
   case genericError(Error)
 }
@@ -69,22 +69,14 @@ public final class NetworkRequestService: NetworkRequestServiceProtocol {
         let serializedValue = try JSONDecoder().decode(T.self, from: data)
         return .success(serializedValue)
     } catch let DecodingError.dataCorrupted(context) {
-      print(context)
-      return .failure(SerializationError.dataCorrupted)
+      return .failure(SerializationError.dataCorrupted(context))
     } catch let DecodingError.keyNotFound(key, context) {
-      print("Key '\(key)' not found:", context.debugDescription)
-      print("codingPath:", context.codingPath)
-      return .failure(SerializationError.keyNotFound)
+      return .failure(SerializationError.keyNotFound(key, context))
     } catch let DecodingError.valueNotFound(value, context) {
-      print("Value '\(value)' not found:", context.debugDescription)
-      print("codingPath:", context.codingPath)
-      return .failure(SerializationError.valueNotFound)
+      return .failure(SerializationError.valueNotFound(value, context))
     } catch let DecodingError.typeMismatch(type, context) {
-      print("Type '\(type)' mismatch:", context.debugDescription)
-      print("codingPath:", context.codingPath)
-      return .failure(SerializationError.typeMismatch)
+      return .failure(SerializationError.typeMismatch(type, context))
     } catch {
-        print("error: ", error)
       return .failure(SerializationError.genericError(error))
     }
   }

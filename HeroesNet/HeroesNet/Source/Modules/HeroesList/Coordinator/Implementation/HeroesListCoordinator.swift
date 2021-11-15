@@ -7,6 +7,7 @@
 
 import UIKit
 import EamCoreUtils
+import EamDomain
 
 class HeroesListCoordinator: NSObject, BaseCoordinatorProtocol {
   
@@ -16,11 +17,19 @@ class HeroesListCoordinator: NSObject, BaseCoordinatorProtocol {
   /// Navigation controller to push view controllers
   var navigationController: UINavigationController
   
-  /// Repository for the view model
-  var repository: RepositoryProtocol
+  /// Heroes use case for the view model
+  var heroesUseCase: HeroesUseCaseProtocol
+  
+  /// IsConnectionOn use case for the view model
+  var isConnectionOnUseCase: IsConnectionOnUseCaseProtocol
+  
+  /// startNetworkMonitoring use case for the view model
+  var startNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseProtocol
   
   lazy var viewModel: HeroesListViewModelProtocol! = {
-      let viewModel = HeroesListViewModel(repository: self.repository)
+      let viewModel = HeroesListViewModel(heroesUseCase: self.heroesUseCase,
+                                          isConnectionOnUseCase: isConnectionOnUseCase,
+                                          startNetworkMonitoringUseCase: startNetworkMonitoringUseCase)
       return viewModel
   }()
   
@@ -29,10 +38,14 @@ class HeroesListCoordinator: NSObject, BaseCoordinatorProtocol {
   /// Inits the coordinator
   /// - Parameter navigationController: navigation controller
   init(navigationController: UINavigationController,
-       repository: RepositoryProtocol) {
+       heroesUseCase: HeroesUseCaseProtocol,
+       isConnectionOnUseCase: IsConnectionOnUseCaseProtocol,
+       startNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseProtocol) {
       
-      self.navigationController = navigationController
-      self.repository = repository
+    self.navigationController = navigationController
+    self.heroesUseCase = heroesUseCase
+    self.isConnectionOnUseCase = isConnectionOnUseCase
+    self.startNetworkMonitoringUseCase = startNetworkMonitoringUseCase
   }
     
   /// Push the view controller
@@ -65,10 +78,10 @@ class HeroesListCoordinator: NSObject, BaseCoordinatorProtocol {
 extension HeroesListCoordinator: HeroesListViewModelCoordinatorDelegate {
  
   /// Navigates to the detail view
-  public func showDetail(heroInfo: HeroEntity) {
+  public func showDetail(heroInfo: HeroDomain) {
     
     let childCoordinator = HeroDetailCoordinator(navigationController: navigationController,
-                                                 repository: repository)
+                                                 isConneciontOnUseCase: isConnectionOnUseCase)
     childCoordinator.parentCoordinator = self
     childCoordinator.heroInfo = heroInfo
     childCoordinators.append(childCoordinator)
@@ -98,7 +111,7 @@ extension HeroesListCoordinator: UINavigationControllerDelegate {
     // so we can check whether it is a detail view controller
     if let detailViewController = fromViewController as? HeroDetailViewController {
         // We are popping a detail view controller; end its coordinator
-      didFinishChild(detailViewController.viewModel?.coordinatorDelegate as? (BaseCoordinatorProtocol & HeroDetailCoordinatorProtocol) )
+      didFinishChild(detailViewController.viewModel.coordinatorDelegate as? (BaseCoordinatorProtocol & HeroDetailCoordinatorProtocol) )
     }
   }
 }
