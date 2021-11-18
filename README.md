@@ -57,9 +57,9 @@ and finally, it opens Xcode with the proyect and its libraries loaded and also t
 
 The project has the following folder structure:
 
-HeroesNet : The main app.
+**HeroesNet**: The main app.
 
-Inside "**Project** -> **HeroesNet** -> **Source**" there are the following folders:
+Inside "Project -> HeroesNet -> Source" there are the following folders:
 
   -- **App**: Contains the AppDelegate class and a AppDelegate+DependenciesInjection class to perform dependencies injection.
   
@@ -83,7 +83,7 @@ Inside "**Project** -> **HeroesNet** -> **Source**" there are the following fold
 
 **EamData**: Contains specific models related to the API provided by Marvel.
 
-    Inside the Source folder there are:
+    Inside the "Project -> EamData -> Source" folder there are:
         
         -- Entities: For example; structs that are rellated to the API provided by Marvel
         
@@ -91,10 +91,11 @@ Inside "**Project** -> **HeroesNet** -> **Source**" there are the following fold
     
     Note: Eam stands for "Enterprise Architecture Mobile" components; that is, components that we can created as a frameworks so that they can be
       shared among different app's.
+      
 
 **EamDomain**: Contains specific models to decouple from the Data models (used by the ViewModel's) and also the providers interfaces'.
 
-    Inside the Source folder there are:
+    Inside the "Project -> EamDomain -> Source" folder there are:
     
         -- Models: Classes that are related to the business model (like HeroDomain, which is decoupled from its conterpart in the Data layer).
         
@@ -107,13 +108,13 @@ At the end the main purpose is to have a clean architecture like:
 <img width="454" alt="CleanArchitecture" src="https://user-images.githubusercontent.com/432215/142401462-c001780e-1617-4852-b234-34aa65916512.png">
 
 
-
 **EamCoreServices**: Framework that contains the implementation of generic webservices and reachability methods.
-The **Repository** calls the methods implemented in that layer (which are implemented using protocols).
+
+The **Provider** calls the methods implemented in that layer.
 
 Inside the "Project" folder there are:
 
-  -- **EamCoreServices**: Inside the "Source" folder:
+  -- **EamCoreServices**: Inside the "Project -> EamCoreServices -> Source" folder:
   
     -- WebServices: Implementation of generic web services.
     
@@ -121,9 +122,10 @@ Inside the "Project" folder there are:
     
   -- **EamCoreServicesTests**: Includes test for the NetworkRequestService
   
--- **EamCoreUtils**: Framework that contains the implementation of several utilities.
 
-  -- **EamCoreUtils**: Inside the "Source" folder:
+**EamCoreUtils**: Framework that contains the implementation of several utilities.
+
+  -- **EamCoreUtils**: Inside the "SProject -> EamCoreUtils -> Source" folder:
   
     -- Binding: Utility to add one-way binding for UILabel and two-way binding for UITextField.
     
