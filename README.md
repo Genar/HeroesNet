@@ -52,7 +52,7 @@ To compile and run the app, please follow the following instructions.
   This command will open Xcode and then you will be able to run the app, the unit tests and the UI tests.
   
 -- IMPORTANT: After downlading the project from the **main** branch, you will notice that there is a script called **buildtuist.sh** in the directory **HeroesNet/HeroesNet**. This script executes all the aforementioned steps for you (like installing the last version of **tuist**, generating the project files),
-and finally, it opens the proyect with Xcode (with all its libraries loaded, and also its schemes, to run both the app and the tests.
+and finally, it opens the proyect with Xcode (with all its libraries loaded, and also its schemes), to run both the app and the tests.
 
 ## Project structure
 
