@@ -20,7 +20,7 @@ enum InfoError: Error {
   case noHeroInfo
 }
 
-public final class HeroesProvider: HeroesProviderProtocol {
+public final class HeroesProvider {
 
   let authConfig: AuthConfigProtocol
   let baseConfig: BaseConfigProtocol
@@ -37,6 +37,9 @@ public final class HeroesProvider: HeroesProviderProtocol {
     self.endPoints = endPoints
     self.requestService = requestService
   }
+}
+
+extension HeroesProvider: HeroesProviderProtocol {
   
   public func getHeroes(limit: Int, offset: Int, completion: ((Result<[HeroDomain], Error>) -> Void)? ) {
     

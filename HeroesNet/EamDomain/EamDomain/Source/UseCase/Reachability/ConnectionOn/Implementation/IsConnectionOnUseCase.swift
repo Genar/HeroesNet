@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class IsConnectionOnUseCase: IsConnectionOnUseCaseProtocol {
+public final class IsConnectionOnUseCase {
   
   private let provider: ReachabilityProviderProtocol
   
@@ -18,7 +18,7 @@ public final class IsConnectionOnUseCase: IsConnectionOnUseCaseProtocol {
   }
 }
 
-extension IsConnectionOnUseCase {
+extension IsConnectionOnUseCase: IsConnectionOnUseCaseProtocol {
   
   public func execute() -> Bool {
     

@@ -11,7 +11,7 @@ import Network
 import EamCoreServices
 import EamDomain
 
-public final class ReachabilityProvider: ReachabilityProviderProtocol {
+public final class ReachabilityProvider {
   
   let reachabilityService: ReachabilityServiceProtocol
   
@@ -21,7 +21,7 @@ public final class ReachabilityProvider: ReachabilityProviderProtocol {
   }
 }
 
-extension ReachabilityProvider {
+extension ReachabilityProvider: ReachabilityProviderProtocol {
   
   public func isNetworkOn() -> Bool {
     

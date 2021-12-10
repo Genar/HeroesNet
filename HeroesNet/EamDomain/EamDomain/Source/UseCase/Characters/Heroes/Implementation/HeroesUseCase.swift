@@ -6,7 +6,7 @@
 //  Copyright © 2021 Genar. All rights reserved.
 //
 
-public final class HeroesUseCase: HeroesUseCaseProtocol {
+public final class HeroesUseCase {
   
   private let provider: HeroesProviderProtocol
   
@@ -16,7 +16,7 @@ public final class HeroesUseCase: HeroesUseCaseProtocol {
   }
 }
 
-extension HeroesUseCase {
+extension HeroesUseCase: HeroesUseCaseProtocol {
   
   public func execute(limit: Int, offset: Int, completion: ((Result<[HeroDomain], Error>) -> Void)? ) {
     

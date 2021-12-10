@@ -9,7 +9,7 @@
 import Foundation
 import Network
 
-public final class StartNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseProtocol {
+public final class StartNetworkMonitoringUseCase {
   
   private let provider: ReachabilityProviderProtocol
   
@@ -19,7 +19,7 @@ public final class StartNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseP
   }
 }
 
-extension StartNetworkMonitoringUseCase {
+extension StartNetworkMonitoringUseCase: StartNetworkMonitoringUseCaseProtocol {
   
   public func execute(pathUpdateHandler: ((NWPath) -> Void)?) {
     

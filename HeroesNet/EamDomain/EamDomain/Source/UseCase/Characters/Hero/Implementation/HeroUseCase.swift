@@ -8,7 +8,7 @@
 
 import Foundation
 
-public final class HeroUseCase: HeroUseCaseProtocol {
+public final class HeroUseCase {
   
   private let provider: HeroesProviderProtocol
   
@@ -18,7 +18,7 @@ public final class HeroUseCase: HeroUseCaseProtocol {
   }
 }
 
-extension HeroUseCase {
+extension HeroUseCase: HeroUseCaseProtocol {
   
   public func execute(code: Int, completion: ((Result<HeroDomain, Error>) -> Void)? ) {
     
